@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark" data-lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SoundBridge — الجسر الصوتي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ==================== CSS VARIABLES ==================== */
+:root {
+  /* Colors - Dark Theme */
+  --bg-primary: #070b14;
+  --bg-secondary: #0d1525;
+  --bg-card: #111927;
+  --bg-glass: rgba(17, 25, 39, 0.7);
+  --border: rgba(99, 179, 237, 0.12);
+  --border-glow: rgba(99, 179, 237, 0.3);
+
+  --accent-cyan: #38bdf8;
+  --accent-blue: #6366f1;
+  --accent-purple: #a855f7;
+  --accent-teal: #2dd4bf;
+  --accent-orange: #fb923c;
+
+  --text-primary: #f0f6ff;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+
+  --gradient-hero: linear-gradient(135deg, #070b14 0%, #0d1a2e 50%, #0a1628 100%);
+  --gradient-accent: linear-gradient(135deg, #38bdf8, #6366f1);
+  --gradient-card: linear-gradient(145deg, rgba(17,25,39,0.9), rgba(13,21,37,0.95));
+
+  /* Fonts */
+  --font-en: 'Outfit', sans-serif;
+  --font-ar: 'Noto Kufi Arabic', sans-serif;
+
+  /* Spacing */
+  --nav-h: 70px;
+  --section-py: clamp(60px, 10vw, 120px);
+  --container: min(1200px, 92vw);
+
+  /* Transitions */
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f0f6ff;
+  --bg-secondary: #e8f0fb;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(255,255,255,0.8);
+  --border: rgba(99, 179, 237, 0.2);
+  --border-glow: rgba(99, 102, 241, 0.3);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+
+  --gradient-hero: linear-gradient(135deg, #dbeafe 0%, #ede9fe 50%, #cffafe 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,246,255,0.9));
+}
+
+/* ==================== RESET & BASE ==================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-en);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background var(--transition-slow), color var(--transition-slow);
+}
+
+[data-lang="ar"] body,
+[data-lang="ar"] {
+  font-family: var(--font-ar);
+  direction: rtl;
+}
+
+[data-lang="ar"] .lang-en { display: none !important; }
+[data-lang="en"] .lang-ar { display: none !important; }
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+.container { width: var(--container); margin: 0 auto; }
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 3px; }
+
+/* ==================== NAVBAR ==================== */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 1000;
+  transition: background var(--transition), backdrop-filter var(--transition), box-shadow var(--transition);
+}
+
+#navbar.scrolled {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.nav-inner {
+  width: var(--container);
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--gradient-accent);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 2px;
+  background: var(--gradient-accent);
+  transform: scaleX(0);
+  transition: transform var(--transition);
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ctrl-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition);
+}
+.ctrl-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.hamburger {
+  display: none;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.hamburger span {
+  display: block;
+  width: 18px; height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+
+/* Mobile Nav */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: var(--nav-h); left: 0; right: 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 20px var(--container);
+  z-index: 999;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all var(--transition);
+}
+.mobile-nav.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mobile-nav a {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.mobile-nav a:hover {
+  background: rgba(56,189,248,0.08);
+  color: var(--accent-cyan);
+}
+
+/* ==================== HERO ==================== */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--nav-h);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-hero);
+  z-index: 0;
+}
+
+/* Animated mesh orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: float 8s ease-in-out infinite;
+}
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #38bdf8, transparent 70%);
+  top: -100px; left: -100px;
+  animation-delay: 0s;
+}
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #6366f1, transparent 70%);
+  top: 50%; right: -100px;
+  animation-delay: -3s;
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #a855f7, transparent 70%);
+  bottom: -80px; left: 30%;
+  animation-delay: -6s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* Grid pattern overlay */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 820px;
+  padding: 40px 20px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--border-glow);
+  background: rgba(56,189,248,0.08);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeInUp 0.8s ease both;
+}
+
+.badge-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.hero-title {
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+  animation: fadeInUp 0.8s ease 0.1s both;
+}
+
+.hero-title .gradient-text {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--accent-teal);
+  font-weight: 500;
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+  animation: fadeInUp 0.8s ease 0.15s both;
+}
+
+.hero-desc {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+.btn-primary {
+  padding: 14px 32px;
+  border-radius: 100px;
+  background: var(--gradient-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all var(--transition);
+  box-shadow: 0 0 30px rgba(56,189,248,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(56,189,248,0.5);
+}
+
+.btn-secondary {
+  padding: 14px 32px;
+  border-radius: 100px;
+  border: 1px solid var(--border-glow);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: transparent;
+  transition: all var(--transition);
+}
+.btn-secondary:hover {
+  background: rgba(56,189,248,0.08);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Hero stats */
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 60px;
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+.stat-item {
+  text-align: center;
+}
+.stat-num {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stat-divider {
+  width: 1px;
+  background: var(--border);
+  align-self: stretch;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  animation: fadeInUp 1s ease 0.8s both;
+}
+.scroll-mouse {
+  width: 24px; height: 38px;
+  border: 2px solid var(--text-muted);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.scroll-dot {
+  width: 4px; height: 8px;
+  background: var(--accent-cyan);
+  border-radius: 2px;
+  animation: scrollDot 2s ease infinite;
+}
+@keyframes scrollDot {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(12px); }
+}
+
+/* ==================== SECTION BASE ==================== */
+section {
+  padding: var(--section-py) 0;
+  position: relative;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  margin-bottom: 16px;
+}
+
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--accent-cyan);
+}
+
+[data-lang="ar"] .section-label::before { display: none; }
+[data-lang="ar"] .section-label::after {
+  content: '';
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--accent-cyan);
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+  color: var(--text-secondary);
+  max-width: 560px;
+  line-height: 1.75;
+}
+
+/* ==================== PROBLEM ==================== */
+#problem { background: var(--bg-secondary); }
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 56px;
+}
+
+.problem-card {
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--gradient-card);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition);
+  opacity: 0;
+  transform: translateY(30px);
+}
+.problem-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.problem-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.problem-card:hover::before { opacity: 1; }
+.problem-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
+
+.problem-icon {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+.problem-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.problem-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.problem-highlight {
+  grid-column: 1 / -1;
+  padding: 36px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(99,102,241,0.1));
+  border: 1px solid rgba(56,189,248,0.2);
+  text-align: center;
+}
+.problem-highlight .big-num {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 900;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.problem-highlight p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 10px;
+}
+
+/* ==================== SOLUTION ==================== */
+#solution { overflow: hidden; }
+
+.solution-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.solution-visual {
+  position: relative;
+  height: 420px;
+}
+
+.device-card {
+  position: absolute;
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  transition: all var(--transition);
+}
+.device-card:hover { transform: scale(1.03); border-color: var(--border-glow); }
+
+.device-card-main {
+  width: 220px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(99,102,241,0.12));
+  border-color: rgba(56,189,248,0.25);
+  text-align: center;
+  padding: 28px;
+}
+
+.device-card-main .device-icon { font-size: 3.5rem; }
+.device-card-main h3 { font-size: 1rem; font-weight: 700; }
+.device-card-main p { font-size: 0.78rem; color: var(--accent-cyan); font-weight: 600; }
+
+.device-card-sm {
+  width: 160px;
+  z-index: 2;
+}
+.device-card-sm:nth-child(2) { top: 20px; left: 0; }
+.device-card-sm:nth-child(3) { top: 20px; right: 0; }
+.device-card-sm:nth-child(4) { bottom: 30px; left: 20px; }
+.device-card-sm:nth-child(5) { bottom: 30px; right: 20px; }
+
+.device-card-sm .device-icon { font-size: 1.8rem; }
+.device-card-sm h4 { font-size: 0.82rem; font-weight: 700; }
+.device-card-sm span { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Connecting lines */
+.connect-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+  height: 1px;
+  z-index: 1;
+  animation: lineFlow 3s ease-in-out infinite;
+}
+
+@keyframes lineFlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.solution-content .section-desc { margin-bottom: 28px; }
+
+.solution-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 28px;
+}
+.sol-feat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: all var(--transition);
+}
+.sol-feat:hover { border-color: var(--border-glow); background: rgba(56,189,248,0.05); }
+.sol-feat-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--gradient-accent);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.sol-feat-text h4 { font-size: 0.9rem; font-weight: 700; }
+.sol-feat-text p { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* ==================== HOW IT WORKS ==================== */
+#how { background: var(--bg-secondary); }
+
+.steps-container {
+  margin-top: 56px;
+  position: relative;
+}
+
+.steps-line {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple));
+  z-index: 0;
+}
+
+[data-lang="ar"] .steps-line {
+  left: auto;
+  right: 24px;
+}
+
+.steps-grid {
+  display: grid;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-card {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--gradient-card);
+  transition: all var(--transition);
+  opacity: 0;
+  transform: translateX(-20px);
+}
+.step-card.visible { opacity: 1; transform: translateX(0); }
+[data-lang="ar"] .step-card.visible { transform: translateX(0); }
+[data-lang="ar"] .step-card { transform: translateX(20px); }
+
+.step-card:hover { border-color: var(--border-glow); transform: translateX(8px); }
+[data-lang="ar"] .step-card:hover { transform: translateX(-8px); }
+
+.step-num {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: var(--gradient-accent);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(56,189,248,0.4);
+}
+
+.step-body h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.step-body p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* ==================== DEVICES ==================== */
+#devices { overflow: hidden; }
+
+.devices-intro {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 60px;
+}
+.devices-intro .section-label { justify-content: center; }
+.devices-intro .section-label::before { display: none; }
+
+.devices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.device-full-card {
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--gradient-card);
+  overflow: hidden;
+  transition: all var(--transition);
+  opacity: 0;
+  transform: translateY(40px);
+}
+.device-full-card.visible { opacity: 1; transform: translateY(0); }
+.device-full-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-8px);
+  box-shadow: 0 30px 80px rgba(56,189,248,0.1);
+}
+
+.device-header {
+  padding: 36px 28px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(99,102,241,0.08));
+  border-bottom: 1px solid var(--border);
+}
+.device-emoji { font-size: 4rem; margin-bottom: 12px; }
+.device-header h3 { font-size: 1.1rem; font-weight: 800; }
+.device-header .device-sub { font-size: 0.78rem; color: var(--accent-cyan); font-weight: 600; margin-top: 4px; }
+
+.device-specs {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.spec-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+/* ==================== FEATURES ==================== */
+#features { background: var(--bg-secondary); }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+
+.feature-card {
+  padding: 32px 28px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--gradient-card);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition);
+  opacity: 0;
+  transform: translateY(24px);
+}
+.feature-card.visible { opacity: 1; transform: translateY(0); }
+.feature-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gradient-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition);
+}
+[data-lang="ar"] .feature-card::after { transform-origin: right; }
+.feature-card:hover::after { transform: scaleX(1); }
+.feature-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
+
+.feature-icon-wrap {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.ic-cyan { background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.2); }
+.ic-blue { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); }
+.ic-purple { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.2); }
+.ic-teal { background: rgba(45,212,191,0.12); border: 1px solid rgba(45,212,191,0.2); }
+.ic-orange { background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.2); }
+.ic-pink { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.2); }
+
+.feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+.feature-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65; }
+
+/* ==================== USE CASES ==================== */
+#usecases { overflow: hidden; }
+
+.usecases-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.usecases-header .section-label { justify-content: center; }
+.usecases-header .section-label::before { display: none; }
+.usecases-header .section-desc { margin: 0 auto; text-align: center; }
+
+.usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.usecase-card {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--gradient-card);
+  transition: all var(--transition);
+  opacity: 0;
+  transform: scale(0.96);
+}
+.usecase-card.visible { opacity: 1; transform: scale(1); }
+.usecase-card:hover { border-color: var(--border-glow); transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.2); }
+
+.usecase-cover {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.uc-daily { background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(45,212,191,0.15)); }
+.uc-edu { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15)); }
+.uc-health { background: linear-gradient(135deg, rgba(251,146,60,0.15), rgba(236,72,153,0.15)); }
+
+.usecase-body { padding: 24px; }
+.usecase-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+.usecase-body p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 16px; }
+
+.usecase-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(56,189,248,0.1);
+  border: 1px solid rgba(56,189,248,0.15);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+/* ==================== VISION ==================== */
+#vision { background: var(--bg-secondary); }
+
+.vision-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.vision-content .section-desc { margin-bottom: 36px; }
+
+.vision-milestones {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.milestone {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 28px;
+  position: relative;
+}
+.milestone:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+[data-lang="ar"] .milestone:not(:last-child)::after {
+  left: auto;
+  right: 19px;
+}
+.milestone-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-cyan);
+  background: var(--bg-card);
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.milestone-body h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.milestone-body p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+
+.vision-visual {
+  position: relative;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vision-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: rotate linear infinite;
+}
+.ring-1 {
+  width: 300px; height: 300px;
+  border-color: rgba(56,189,248,0.2);
+  animation-duration: 20s;
+}
+.ring-2 {
+  width: 220px; height: 220px;
+  border-color: rgba(99,102,241,0.3);
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+.ring-3 {
+  width: 140px; height: 140px;
+  border-color: rgba(168,85,247,0.4);
+  animation-duration: 10s;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vision-center {
+  z-index: 2;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--gradient-accent);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  box-shadow: 0 0 40px rgba(56,189,248,0.5);
+}
+
+/* Orbit dots */
+.orbit-dot {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+}
+
+/* ==================== CTA ==================== */
+#cta {
+  padding: var(--section-py) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(99,102,241,0.08));
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.cta-icon {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.cta-content .section-title { margin-bottom: 16px; }
+.cta-content .section-desc { margin: 0 auto 40px; text-align: center; }
+
+.cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+.innovator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.innovator-badge strong { color: var(--text-primary); }
+
+/* ==================== FOOTER ==================== */
+footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 40px 0;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+footer p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== LIGHT MODE OVERRIDES ==================== */
+[data-theme="light"] .orb { opacity: 0.15; }
+[data-theme="light"] .hero-grid {
+  background-image:
+    linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+}
+[data-theme="light"] .device-card,
+[data-theme="light"] .problem-card,
+[data-theme="light"] .step-card,
+[data-theme="light"] .device-full-card,
+[data-theme="light"] .feature-card,
+[data-theme="light"] .usecase-card,
+[data-theme="light"] .sol-feat {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .mobile-nav { display: flex; }
+
+  .problem-grid { grid-template-columns: 1fr; }
+  .solution-inner { grid-template-columns: 1fr; }
+  .solution-visual { height: 300px; order: -1; }
+  .devices-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .usecases-grid { grid-template-columns: 1fr; }
+  .vision-inner { grid-template-columns: 1fr; }
+  .vision-visual { height: 280px; order: -1; }
+}
+
+@media (max-width: 600px) {
+  :root { --nav-h: 60px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 16px; }
+  .stat-divider { display: none; }
+  .step-card { grid-template-columns: 40px 1fr; gap: 16px; }
+  .steps-line { left: 20px; }
+  [data-lang="ar"] .steps-line { left: auto; right: 20px; }
+
+  .device-card-sm:nth-child(2) { display: none; }
+  .device-card-sm:nth-child(3) { top: 10px; right: 0; }
+  .device-card-sm:nth-child(4) { display: none; }
+  .device-card-sm:nth-child(5) { bottom: 10px; right: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="logo-icon">🎙️</div>
+      <span>SoundBridge</span>
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#problem" class="lang-en">Problem</a><a href="#problem" class="lang-ar">التحدي</a></li>
+      <li><a href="#solution" class="lang-en">Solution</a><a href="#solution" class="lang-ar">الحل</a></li>
+      <li><a href="#how" class="lang-en">How It Works</a><a href="#how" class="lang-ar">كيف يعمل</a></li>
+      <li><a href="#devices" class="lang-en">Devices</a><a href="#devices" class="lang-ar">الأجهزة</a></li>
+      <li><a href="#features" class="lang-en">Features</a><a href="#features" class="lang-ar">المميزات</a></li>
+      <li><a href="#vision" class="lang-en">Vision</a><a href="#vision" class="lang-ar">الرؤية</a></li>
+    </ul>
+
+    <div class="nav-controls">
+      <button class="ctrl-btn" id="langToggle" aria-label="Toggle Language">
+        <span class="lang-en">🌐 العربية</span>
+        <span class="lang-ar">🌐 English</span>
+      </button>
+      <button class="ctrl-btn" id="themeToggle" aria-label="Toggle Theme">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel" class="lang-en">Light</span>
+        <span id="themeLabelAr" class="lang-ar">فاتح</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#problem" onclick="closeMobile()" class="lang-en">Problem</a>
+  <a href="#problem" onclick="closeMobile()" class="lang-ar">التحدي</a>
+  <a href="#solution" onclick="closeMobile()" class="lang-en">Solution</a>
+  <a href="#solution" onclick="closeMobile()" class="lang-ar">الحل</a>
+  <a href="#how" onclick="closeMobile()" class="lang-en">How It Works</a>
+  <a href="#how" onclick="closeMobile()" class="lang-ar">كيف يعمل</a>
+  <a href="#devices" onclick="closeMobile()" class="lang-en">Devices</a>
+  <a href="#devices" onclick="closeMobile()" class="lang-ar">الأجهزة</a>
+  <a href="#features" onclick="closeMobile()" class="lang-en">Features</a>
+  <a href="#features" onclick="closeMobile()" class="lang-ar">المميزات</a>
+  <a href="#vision" onclick="closeMobile()" class="lang-en">Vision</a>
+  <a href="#vision" onclick="closeMobile()" class="lang-ar">الرؤية</a>
+  <a href="#cta" onclick="closeMobile()" class="lang-en">Contact</a>
+  <a href="#cta" onclick="closeMobile()" class="lang-ar">تواصل معنا</a>
+</div>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span class="lang-en">AI · IoT · Assistive Technology · 2026</span>
+      <span class="lang-ar">ذكاء اصطناعي · إنترنت الأشياء · تقنية مساعِدة · 2026</span>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="gradient-text">Sound</span>Bridge
+    </h1>
+
+    <p class="hero-subtitle lang-en">الجسر الصوتي — Bridging Worlds Through Sound</p>
+    <p class="hero-subtitle lang-ar">الجسر الصوتي — جسر العوالم عبر الصوت</p>
+
+    <p class="hero-desc lang-en">
+      An AI-powered wearable ecosystem that empowers individuals with hearing and speech impairments to communicate naturally — in real-time, with emotion, with dignity.
+    </p>
+    <p class="hero-desc lang-ar">
+      منظومة تقنية ذكية قابلة للارتداء تُمكّن الأشخاص ذوي الإعاقة السمعية والنطقية من التواصل الطبيعي في الوقت الفعلي — بمشاعر حقيقية وكرامة إنسانية.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#solution" class="btn-primary">
+        <span class="lang-en">Discover the Innovation</span>
+        <span class="lang-ar">اكتشف الابتكار</span>
+      </a>
+      <a href="#devices" class="btn-secondary">
+        <span class="lang-en">See the Devices</span>
+        <span class="lang-ar">شاهد الأجهزة</span>
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">430M+</div>
+        <div class="stat-label lang-en">People Impacted</div>
+        <div class="stat-label lang-ar">شخص مستهدف</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label lang-en">Core Components</div>
+        <div class="stat-label lang-ar">مكوّنات متكاملة</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">&lt;0.5s</div>
+        <div class="stat-label lang-en">Response Time</div>
+        <div class="stat-label lang-ar">زمن الاستجابة</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label lang-en">Usage Modes</div>
+        <div class="stat-label lang-ar">أوضاع استخدام</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"><div class="scroll-dot"></div></div>
+    <span class="lang-en">Scroll to explore</span>
+    <span class="lang-ar">مرّر للاستكشاف</span>
+  </div>
+</section>
+
+<!-- ==================== PROBLEM ==================== -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label lang-en">The Challenge</div>
+    <div class="section-label lang-ar">التحدي</div>
+    <h2 class="section-title lang-en">A World That Doesn't Listen</h2>
+    <h2 class="section-title lang-ar">عالم لا يسمع</h2>
+    <p class="section-desc lang-en">
+      Over 430 million people live with disabling hearing loss. Existing tools fail them daily — too complex, too niche, or built for entertainment rather than life.
+    </p>
+    <p class="section-desc lang-ar">
+      أكثر من 430 مليون شخص يعيشون مع فقدان السمع. الأدوات الموجودة تخذلهم يومياً — معقدة جداً أو مخصصة للترفيه لا للحياة الحقيقية.
+    </p>
+
+    <div class="problem-grid">
+      <div class="problem-highlight observe">
+        <div class="big-num">430M+</div>
+        <p class="lang-en">People worldwide living with disabling hearing loss — WHO 2023</p>
+        <p class="lang-ar">شخص حول العالم يعانون من فقدان السمع المعيق — منظمة الصحة العالمية 2023</p>
+      </div>
+
+      <div class="problem-card observe">
+        <div class="problem-icon">📱</div>
+        <h3 class="lang-en">STT Apps Require Constant Phone Use</h3>
+        <h3 class="lang-ar">تطبيقات STT تستلزم حمل الهاتف دائماً</h3>
+        <p class="lang-en">Speech-to-text applications require the user to hold a phone screen-up at all times — impractical, uncomfortable, and socially stigmatizing.</p>
+        <p class="lang-ar">تتطلب تطبيقات تحويل الكلام إلى نص إمساك الهاتف باستمرار، وهو أمر غير عملي ومرهق اجتماعياً.</p>
+      </div>
+
+      <div class="problem-card observe">
+        <div class="problem-icon">⌚</div>
+        <h3 class="lang-en">Smartwatches Lack Deaf-Specific Features</h3>
+        <h3 class="lang-ar">الساعات الذكية خالية من وظائف خاصة بالصم</h3>
+        <p class="lang-en">Commercial smartwatches offer no specialized assistive functions for the deaf — they are built for fitness and notifications, not communication.</p>
+        <p class="lang-ar">الساعات الذكية التجارية لا تقدم وظائف متخصصة للصم — مصممة للياقة والإشعارات فقط.</p>
+      </div>
+
+      <div class="problem-card observe">
+        <div class="problem-icon">🔊</div>
+        <h3 class="lang-en">Hearing Aids Only Amplify</h3>
+        <h3 class="lang-ar">السماعات الطبية تضخّم الصوت فقط</h3>
+        <p class="lang-en">Traditional hearing aids simply amplify ambient sound without any intelligence, emotion detection, danger alerts, or two-way communication capabilities.</p>
+        <p class="lang-ar">السماعات الطبية التقليدية تضخّم الصوت فقط دون أي ذكاء أو كشف مشاعر أو تنبيهات خطر.</p>
+      </div>
+
+      <div class="problem-card observe">
+        <div class="problem-icon">🎧</div>
+        <h3 class="lang-en">Neck Speakers Built for Entertainment</h3>
+        <h3 class="lang-ar">سماعات الرقبة للترفيه فقط</h3>
+        <p class="lang-en">Commercial neck speakers have zero assistive AI integration — no microphone for speech capture, no vibration alerts, no intelligent classification system.</p>
+        <p class="lang-ar">سماعات الرقبة التجارية خالية من أي ذكاء اصطناعي مساعِد — لا ميكروفون، لا تنبيهات، لا تصنيف ذكي.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SOLUTION ==================== -->
+<section id="solution">
+  <div class="container">
+    <div class="solution-inner">
+      <div class="solution-visual observe">
+        <!-- Central main card -->
+        <div class="device-card device-card-main">
+          <div class="device-icon">🎙️</div>
+          <h3>SoundBridge</h3>
+          <p class="lang-en">AI Ecosystem</p>
+          <p class="lang-ar">منظومة ذكاء اصطناعي</p>
+        </div>
+        <!-- Satellite cards -->
+        <div class="device-card device-card-sm">
+          <div class="device-icon">⌚</div>
+          <h4 class="lang-en">Smartwatch</h4>
+          <h4 class="lang-ar">ساعة ذكية</h4>
+          <span class="lang-en">Display · Vibrate · SOS</span>
+          <span class="lang-ar">شاشة · هزاز · طوارئ</span>
+        </div>
+        <div class="device-card device-card-sm">
+          <div class="device-icon">📱</div>
+          <h4 class="lang-en">Smart App</h4>
+          <h4 class="lang-ar">التطبيق الذكي</h4>
+          <span class="lang-en">STT · TTS · Settings</span>
+          <span class="lang-ar">نص↔صوت · إعدادات</span>
+        </div>
+        <div class="device-card device-card-sm">
+          <div class="device-icon">🧠</div>
+          <h4 class="lang-en">AI Server</h4>
+          <h4 class="lang-ar">الخادم الذكي</h4>
+          <span class="lang-en">Deep Learning · MFCC</span>
+          <span class="lang-ar">تعلم عميق · تحليل</span>
+        </div>
+        <div class="device-card device-card-sm">
+          <div class="device-icon">🔊</div>
+          <h4 class="lang-en">Neck Speaker</h4>
+          <h4 class="lang-ar">سماعة الرقبة</h4>
+          <span class="lang-en">Mic · Speaker · Vibrate</span>
+          <span class="lang-ar">ميكروفون · مكبر · هزاز</span>
+        </div>
+      </div>
+
+      <div class="solution-content">
+        <div class="section-label lang-en">The Solution</div>
+        <div class="section-label lang-ar">الحل</div>
+        <h2 class="section-title lang-en">One Ecosystem.<br/>Total Connectivity.</h2>
+        <h2 class="section-title lang-ar">منظومة واحدة.<br/>تواصل شامل.</h2>
+        <p class="section-desc lang-en">
+          SoundBridge is an integrated wearable system combining AI and IoT across four interconnected components — delivering real-time communication, emotion awareness, and danger detection in one seamless experience.
+        </p>
+        <p class="section-desc lang-ar">
+          SoundBridge منظومة متكاملة قابلة للارتداء تجمع بين الذكاء الاصطناعي وإنترنت الأشياء في أربعة مكوّنات مترابطة — تواصل فوري، وإدراك للمشاعر، وكشف الأخطار في تجربة واحدة سلسة.
+        </p>
+
+        <div class="solution-features">
+          <div class="sol-feat">
+            <div class="sol-feat-icon">🎭</div>
+            <div class="sol-feat-text">
+              <h4 class="lang-en">Emotion-Aware Voice Output</h4>
+              <h4 class="lang-ar">صوت يحمل المشاعر</h4>
+              <p class="lang-en">Text-to-Speech with multiple emotional tones</p>
+              <p class="lang-ar">تحويل النص لكلام بنبرات عاطفية متعددة</p>
+            </div>
+          </div>
+          <div class="sol-feat">
+            <div class="sol-feat-icon">⚡</div>
+            <div class="sol-feat-text">
+              <h4 class="lang-en">Real-Time Processing</h4>
+              <h4 class="lang-ar">معالجة فورية</h4>
+              <p class="lang-en">Sound classification in under 0.5 seconds</p>
+              <p class="lang-ar">تصنيف الصوت في أقل من نصف ثانية</p>
+            </div>
+          </div>
+          <div class="sol-feat">
+            <div class="sol-feat-icon">🔒</div>
+            <div class="sol-feat-text">
+              <h4 class="lang-en">Encrypted Communication</h4>
+              <h4 class="lang-ar">تواصل مشفّر</h4>
+              <p class="lang-en">All data transmitted with end-to-end encryption</p>
+              <p class="lang-ar">جميع البيانات مشفّرة من طرف إلى طرف</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== HOW IT WORKS ==================== -->
+<section id="how">
+  <div class="container">
+    <div class="section-label lang-en">The Process</div>
+    <div class="section-label lang-ar">آلية العمل</div>
+    <h2 class="section-title lang-en">From Sound to Response<br/>in Milliseconds</h2>
+    <h2 class="section-title lang-ar">من الصوت إلى الاستجابة<br/>في ثوانٍ</h2>
+
+    <div class="steps-container">
+      <div class="steps-line"></div>
+      <div class="steps-grid">
+
+        <div class="step-card observe">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3 class="lang-en">🎙️ Sound Capture</h3>
+            <h3 class="lang-ar">🎙️ التقاط الصوت</h3>
+            <p class="lang-en">The high-sensitivity microphone on the neck speaker captures speech directed naturally toward the ear, as people instinctively speak toward the user's ear.</p>
+            <p class="lang-ar">ميكروفون سماعة الرقبة عالي الحساسية يلتقط الكلام الموجَّه طبيعياً نحو الأذن، إذ يميل الناس غريزياً للتحدث نحو أذن المستخدم.</p>
+          </div>
+        </div>
+
+        <div class="step-card observe">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3 class="lang-en">📡 Encrypted Transmission</h3>
+            <h3 class="lang-ar">📡 إرسال مشفّر</h3>
+            <p class="lang-en">Audio data is instantly transmitted to the central AI server via encrypted Bluetooth/Wi-Fi connection, ensuring privacy at every step.</p>
+            <p class="lang-ar">تُرسَل بيانات الصوت فوراً إلى الخادم المركزي عبر اتصال Bluetooth/Wi-Fi مشفّر، مع ضمان الخصوصية في كل خطوة.</p>
+          </div>
+        </div>
+
+        <div class="step-card observe">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3 class="lang-en">🧠 AI Deep Analysis</h3>
+            <h3 class="lang-ar">🧠 التحليل بالذكاء الاصطناعي</h3>
+            <p class="lang-en">The server extracts MFCC features and spectrograms, then applies deep learning models to classify the sound, detect emotion, and identify any danger signals.</p>
+            <p class="lang-ar">يستخرج الخادم خصائص MFCC والطيف الصوتي، ثم يطبّق نماذج التعلم العميق لتصنيف الصوت وكشف المشاعر وتحديد إشارات الخطر.</p>
+          </div>
+        </div>
+
+        <div class="step-card observe">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3 class="lang-en">🎯 Smart Decision</h3>
+            <h3 class="lang-ar">🎯 اتخاذ القرار الذكي</h3>
+            <p class="lang-en">The AI classifies input into one of five categories: daily speech, danger alert, human emotion, environmental sound, or emergency — then selects the ideal response mode.</p>
+            <p class="lang-ar">يصنّف الذكاء الاصطناعي المدخل إلى أحد خمسة أوضاع: كلام يومي، تنبيه خطر، مشاعر بشرية، صوت بيئي، أو طوارئ — ثم يختار وضع الاستجابة المثلى.</p>
+          </div>
+        </div>
+
+        <div class="step-card observe">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3 class="lang-en">⚡ Instant Multi-Channel Response</h3>
+            <h3 class="lang-ar">⚡ استجابة فورية متعددة القنوات</h3>
+            <p class="lang-en">The response arrives simultaneously: text displayed on the smartwatch, audio played through the neck speaker, and haptic vibration for immediate sensory alerts.</p>
+            <p class="lang-ar">تصل الاستجابة في آنٍ واحد: نص على شاشة الساعة، صوت عبر سماعة الرقبة، واهتزاز حسّي فوري للتنبيهات العاجلة.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== DEVICES ==================== -->
+<section id="devices">
+  <div class="container">
+    <div class="devices-intro">
+      <div class="section-label lang-en">Hardware</div>
+      <div class="section-label lang-ar">الأجهزة</div>
+      <h2 class="section-title lang-en">Four Devices.<br/>One Vision.</h2>
+      <h2 class="section-title lang-ar">أربعة أجهزة.<br/>رؤية واحدة.</h2>
+    </div>
+
+    <div class="devices-grid">
+
+      <div class="device-full-card observe">
+        <div class="device-header">
+          <div class="device-emoji">🎙️</div>
+          <h3 class="lang-en">Smart Neck Speaker</h3>
+          <h3 class="lang-ar">سماعة الرقبة الذكية</h3>
+          <div class="device-sub lang-en">Triple-Function Core Component</div>
+          <div class="device-sub lang-ar">المكوّن الأساسي ثلاثي الوظيفة</div>
+        </div>
+        <div class="device-specs">
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">High-sensitivity microphone for speech capture</span><span class="lang-ar">ميكروفون عالي الحساسية لالتقاط الكلام</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Speaker for emotion-aware voice output</span><span class="lang-ar">مكبّر صوت للمخرجات الصوتية العاطفية</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Built-in vibration motor for haptic alerts</span><span class="lang-ar">محرّك اهتزاز مدمج للتنبيهات الحسّية</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Encrypted BT/Wi-Fi wireless connectivity</span><span class="lang-ar">اتصال BT/Wi-Fi لاسلكي مشفّر</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Strategic position near the ear — natural speech direction</span><span class="lang-ar">موضع استراتيجي قرب الأذن — اتجاه كلام طبيعي</span></div>
+        </div>
+      </div>
+
+      <div class="device-full-card observe">
+        <div class="device-header">
+          <div class="device-emoji">⌚</div>
+          <h3 class="lang-en">SoundBridge Smartwatch</h3>
+          <h3 class="lang-ar">ساعة SoundBridge الذكية</h3>
+          <div class="device-sub lang-en">Visual & Alert Interface</div>
+          <div class="device-sub lang-ar">واجهة العرض والتنبيه</div>
+        </div>
+        <div class="device-specs">
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Display screen for real-time text & alerts</span><span class="lang-ar">شاشة عرض للنصوص والتنبيهات الفورية</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Secondary vibration motor synced with neck speaker</span><span class="lang-ar">هزّاز ثانوي يتزامن مع سماعة الرقبة</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Color LED indicators by danger type & level</span><span class="lang-ar">مصابيح LED ملونة حسب نوع ومستوى الخطر</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">SOS emergency button — one-press automatic alert</span><span class="lang-ar">زر طوارئ SOS — رسالة تلقائية بضغطة واحدة</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Bluetooth sync with app, speaker, and server</span><span class="lang-ar">تزامن Bluetooth مع التطبيق والسماعة والخادم</span></div>
+        </div>
+      </div>
+
+      <div class="device-full-card observe">
+        <div class="device-header">
+          <div class="device-emoji">📱</div>
+          <h3 class="lang-en">Smart Mobile App</h3>
+          <h3 class="lang-ar">التطبيق الذكي</h3>
+          <div class="device-sub lang-en">Control Hub & Communication Center</div>
+          <div class="device-sub lang-ar">مركز التحكم والتواصل</div>
+        </div>
+        <div class="device-specs">
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Real-time Speech-to-Text (STT) conversion</span><span class="lang-ar">تحويل الكلام إلى نص فورياً (STT)</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Text-to-Speech (TTS) with emotional voice tones</span><span class="lang-ar">تحويل النص لكلام بنبرات عاطفية (TTS)</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Voice call to text call conversion</span><span class="lang-ar">تحويل المكالمات الصوتية إلى مكالمات نصية</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Usage mode management & customization</span><span class="lang-ar">إدارة أوضاع الاستخدام والتخصيص</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Daily analytics reports & usage insights</span><span class="lang-ar">تقارير تحليلية يومية وإحصاءات الاستخدام</span></div>
+        </div>
+      </div>
+
+      <div class="device-full-card observe" style="grid-column: 1 / -1; max-width: 400px; margin: 0 auto;">
+        <div class="device-header">
+          <div class="device-emoji">🧠</div>
+          <h3 class="lang-en">Central AI Server</h3>
+          <h3 class="lang-ar">الخادم المركزي بالذكاء الاصطناعي</h3>
+          <div class="device-sub lang-en">Cloud Processing & Intelligence Core</div>
+          <div class="device-sub lang-ar">المعالجة السحابية ونواة الذكاء</div>
+        </div>
+        <div class="device-specs">
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">MFCC feature extraction for audio analysis</span><span class="lang-ar">استخراج MFCC لتحليل الصوت</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Spectrogram analysis for precise classification</span><span class="lang-ar">تحليل طيف الصوت للتصنيف الدقيق</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Deep learning classification in under 0.5 seconds</span><span class="lang-ar">تصنيف بالتعلم العميق في أقل من 0.5 ثانية</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Emotion detection from speaker's voice</span><span class="lang-ar">كشف المشاعر من صوت المتحدث</span></div>
+          <div class="spec-item"><span class="spec-dot"></span><span class="lang-en">Continuous learning — improves with every interaction</span><span class="lang-ar">تعلّم مستمر — يتحسّن مع كل تفاعل</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FEATURES ==================== -->
+<section id="features">
+  <div class="container">
+    <div class="section-label lang-en">Capabilities</div>
+    <div class="section-label lang-ar">القدرات</div>
+    <h2 class="section-title lang-en">Built Different.<br/>Built for People.</h2>
+    <h2 class="section-title lang-ar">مختلف بطبيعته.<br/>مصنوع للإنسان.</h2>
+
+    <div class="features-grid">
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-cyan">🤖</div>
+        <h3 class="lang-en">AI-Powered Intelligence</h3>
+        <h3 class="lang-ar">ذكاء اصطناعي متقدم</h3>
+        <p class="lang-en">Deep learning models process audio in real-time using MFCC and spectrogram analysis — classifying speech, environment, and danger with high accuracy.</p>
+        <p class="lang-ar">نماذج التعلم العميق تعالج الصوت في الوقت الفعلي باستخدام MFCC وتحليل الطيف — تصنيف دقيق للكلام والبيئة والأخطار.</p>
+      </div>
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-orange">⚠️</div>
+        <h3 class="lang-en">Real-Time Danger Detection</h3>
+        <h3 class="lang-ar">كشف الأخطار فورياً</h3>
+        <p class="lang-en">Automatic classification of danger sounds — car horns, alarms, screaming — in under 0.5 seconds with simultaneous haptic alerts on both the watch and neck speaker.</p>
+        <p class="lang-ar">تصنيف تلقائي لأصوات الخطر — أبواق سيارات، إنذارات، صراخ — في أقل من 0.5 ثانية مع تنبيه اهتزازي متزامن على الساعة وسماعة الرقبة.</p>
+      </div>
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-purple">🎭</div>
+        <h3 class="lang-en">Emotion Detection & Expression</h3>
+        <h3 class="lang-ar">كشف المشاعر والتعبير عنها</h3>
+        <p class="lang-en">The AI extracts emotional tone from the speaker's voice and notifies the user instantly — while TTS output can express joy, sadness, urgency, and more.</p>
+        <p class="lang-ar">يستخلص الذكاء الاصطناعي نبرة المشاعر من صوت المتحدث وينبّه المستخدم فوراً — فيما يعبّر مخرج TTS عن الفرح والحزن والجدية وأكثر.</p>
+      </div>
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-teal">♿</div>
+        <h3 class="lang-en">Universal Accessibility</h3>
+        <h3 class="lang-ar">إمكانية وصول شاملة</h3>
+        <p class="lang-en">Designed from day one for all age groups and disability levels — simple, intuitive, and requiring no technical expertise to use effectively.</p>
+        <p class="lang-ar">مصمّم من اليوم الأول لجميع الفئات العمرية ومستويات الإعاقة — بسيط، بديهي، ولا يتطلب خبرة تقنية للاستخدام الفعّال.</p>
+      </div>
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-blue">📞</div>
+        <h3 class="lang-en">Voice-to-Text Calls</h3>
+        <h3 class="lang-ar">مكالمات صوت-نص</h3>
+        <p class="lang-en">Voice calls are converted to text in real-time, enabling the deaf to participate in phone conversations without needing interpreters or relay services.</p>
+        <p class="lang-ar">تُحوَّل المكالمات الصوتية إلى نص في الوقت الفعلي، مما يُمكّن الصم من المشاركة في المحادثات الهاتفية دون مترجمين.</p>
+      </div>
+
+      <div class="feature-card observe">
+        <div class="feature-icon-wrap ic-pink">🆘</div>
+        <h3 class="lang-en">One-Press SOS Emergency</h3>
+        <h3 class="lang-ar">زر طوارئ بضغطة واحدة</h3>
+        <p class="lang-en">A dedicated SOS button on the smartwatch sends an automatic emergency message with location to pre-set contacts — immediate help when seconds matter.</p>
+        <p class="lang-ar">زر SOS مخصص على الساعة يُرسل رسالة طوارئ تلقائية مع الموقع إلى جهات اتصال محددة مسبقاً — مساعدة فورية حين تعدّ الثواني.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== USE CASES ==================== -->
+<section id="usecases">
+  <div class="container">
+    <div class="usecases-header">
+      <div class="section-label lang-en">Real Life</div>
+      <div class="section-label lang-ar">الحياة الفعلية</div>
+      <h2 class="section-title lang-en">Where SoundBridge<br/>Changes Everything</h2>
+      <h2 class="section-title lang-ar">أين يُغيّر SoundBridge<br/>كل شيء</h2>
+      <p class="section-desc lang-en">From daily conversations to classrooms and hospitals — SoundBridge integrates naturally into every corner of life.</p>
+      <p class="section-desc lang-ar">من المحادثات اليومية إلى الفصول الدراسية والمستشفيات — يندمج SoundBridge بشكل طبيعي في كل جانب من جوانب الحياة.</p>
+    </div>
+
+    <div class="usecases-grid">
+
+      <div class="usecase-card observe">
+        <div class="usecase-cover uc-daily">🌅</div>
+        <div class="usecase-body">
+          <h3 class="lang-en">Daily Life</h3>
+          <h3 class="lang-ar">الحياة اليومية</h3>
+          <p class="lang-en">Street navigation, shopping, public transport — SoundBridge makes every everyday interaction effortless and independent, from morning coffee to evening commute.</p>
+          <p class="lang-ar">التنقل في الشوارع، التسوق، المواصلات — يجعل SoundBridge كل تفاعل يومي سلساً ومستقلاً، من قهوة الصباح إلى رحلة العودة مساءً.</p>
+          <div class="usecase-tags">
+            <span class="tag lang-en">Navigation</span><span class="tag lang-ar">التنقل</span>
+            <span class="tag lang-en">Shopping</span><span class="tag lang-ar">التسوق</span>
+            <span class="tag lang-en">Danger Alerts</span><span class="tag lang-ar">تنبيهات الخطر</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usecase-card observe">
+        <div class="usecase-cover uc-edu">🎓</div>
+        <div class="usecase-body">
+          <h3 class="lang-en">Education</h3>
+          <h3 class="lang-ar">التعليم</h3>
+          <p class="lang-en">Real-time transcription of lectures, participation in class discussions, and one-on-one conversations with teachers — enabling full educational inclusion at every level.</p>
+          <p class="lang-ar">نسخ المحاضرات فورياً، المشاركة في النقاشات، والحوار المباشر مع المعلمين — تمكين الشمول التعليمي الكامل في جميع المراحل.</p>
+          <div class="usecase-tags">
+            <span class="tag lang-en">Lecture Transcription</span><span class="tag lang-ar">نسخ المحاضرات</span>
+            <span class="tag lang-en">Inclusion</span><span class="tag lang-ar">الشمول</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="usecase-card observe">
+        <div class="usecase-cover uc-health">🏥</div>
+        <div class="usecase-body">
+          <h3 class="lang-en">Healthcare</h3>
+          <h3 class="lang-ar">الرعاية الصحية</h3>
+          <p class="lang-en">Doctor-patient communication without interpreters, emergency department navigation, medication reminders, and crisis response — SoundBridge saves time when it matters most.</p>
+          <p class="lang-ar">تواصل المريض بالطبيب دون مترجمين، التنقل في الطوارئ، وتنبيهات الأدوية — SoundBridge يوفّر الوقت حين يكون الأمر أكثر أهمية.</p>
+          <div class="usecase-tags">
+            <span class="tag lang-en">Doctor Visits</span><span class="tag lang-ar">زيارات الطبيب</span>
+            <span class="tag lang-en">Emergency</span><span class="tag lang-ar">الطوارئ</span>
+            <span class="tag lang-en">Medication</span><span class="tag lang-ar">الأدوية</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== VISION ==================== -->
+<section id="vision">
+  <div class="container">
+    <div class="vision-inner">
+      <div class="vision-content">
+        <div class="section-label lang-en">The Future</div>
+        <div class="section-label lang-ar">المستقبل</div>
+        <h2 class="section-title lang-en">A World Where<br/>No Voice Goes Unheard</h2>
+        <h2 class="section-title lang-ar">عالم لا يُهمَل<br/>فيه أي صوت</h2>
+        <p class="section-desc lang-en">
+          SoundBridge is not just a device — it's the beginning of a new paradigm in assistive technology. We envision a future where hearing impairment is no longer a barrier to full participation in human society.
+        </p>
+        <p class="section-desc lang-ar">
+          SoundBridge ليس مجرد جهاز — إنه بداية نموذج جديد في تقنية المساعدة. نتخيل مستقبلاً لا يُشكّل فيه ضعف السمع حاجزاً أمام المشاركة الكاملة في المجتمع الإنساني.
+        </p>
+
+        <div class="vision-milestones">
+          <div class="milestone observe">
+            <div class="milestone-dot">🔬</div>
+            <div class="milestone-body">
+              <h4 class="lang-en">Phase 1 — Research & Prototyping</h4>
+              <h4 class="lang-ar">المرحلة الأولى — البحث والنموذج الأولي</h4>
+              <p class="lang-en">Deep learning model training, hardware integration, and clinical validation with target user groups.</p>
+              <p class="lang-ar">تدريب نماذج التعلم العميق، تكامل الأجهزة، والتحقق السريري مع المجموعات المستهدفة.</p>
+            </div>
+          </div>
+          <div class="milestone observe">
+            <div class="milestone-dot">🚀</div>
+            <div class="milestone-body">
+              <h4 class="lang-en">Phase 2 — Pilot & Partnerships</h4>
+              <h4 class="lang-ar">المرحلة الثانية — التجريب والشراكات</h4>
+              <p class="lang-en">Strategic partnerships with hospitals, schools, and accessibility organizations for large-scale pilot programs.</p>
+              <p class="lang-ar">شراكات استراتيجية مع المستشفيات والمدارس ومنظمات التيسير لبرامج تجريبية واسعة النطاق.</p>
+            </div>
+          </div>
+          <div class="milestone observe">
+            <div class="milestone-dot">🌍</div>
+            <div class="milestone-body">
+              <h4 class="lang-en">Phase 3 — Global Launch</h4>
+              <h4 class="lang-ar">المرحلة الثالثة — الإطلاق العالمي</h4>
+              <p class="lang-en">Full commercial launch targeting the 430M+ global population living with hearing impairment across multiple languages and regions.</p>
+              <p class="lang-ar">إطلاق تجاري كامل يستهدف أكثر من 430 مليون شخص حول العالم بلغات ومناطق متعددة.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vision-visual">
+        <div class="vision-ring ring-1"></div>
+        <div class="vision-ring ring-2"></div>
+        <div class="vision-ring ring-3"></div>
+        <div class="vision-center">🎙️</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-content">
+    <span class="cta-icon">🌐</span>
+    <h2 class="section-title lang-en">Ready to Bridge<br/>the Sound Gap?</h2>
+    <h2 class="section-title lang-ar">مستعد لتجسير<br/>فجوة الصوت؟</h2>
+    <p class="section-desc lang-en">
+      SoundBridge is an open innovation concept seeking collaborators, researchers, and partners who share the vision of a fully accessible world.
+    </p>
+    <p class="section-desc lang-ar">
+      SoundBridge ابتكار مفتوح يبحث عن متعاونين وباحثين وشركاء يشاركون رؤية عالم قابل للوصول بالكامل.
+    </p>
+    <div class="cta-buttons">
+      <a href="#solution" class="btn-primary">
+        <span class="lang-en">Explore the Innovation</span>
+        <span class="lang-ar">استكشف الابتكار</span>
+      </a>
+      <a href="#how" class="btn-secondary">
+        <span class="lang-en">How It Works</span>
+        <span class="lang-ar">كيف يعمل</span>
+      </a>
+    </div>
+
+    <div class="innovator-badge">
+      <span>🏆</span>
+      <span>
+        <span class="lang-en"><strong>Innovator:</strong> Amr Mohamed Ramadan · Academy of Scientific Research & Technology · April 2026</span>
+        <span class="lang-ar"><strong>المبتكر:</strong> عمرو محمد رمضان · أكاديمية البحث العلمي والتكنولوجيا · أبريل 2026</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">SoundBridge</div>
+    <p class="lang-en">© 2026 SoundBridge Innovation · Assistive Technology · AI · IoT</p>
+    <p class="lang-ar">© 2026 ابتكار SoundBridge · تقنية مساعِدة · ذكاء اصطناعي · إنترنت الأشياء</p>
+  </div>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+/* ---- State ---- */
+let lang = 'en';
+let theme = 'dark';
+let mobileOpen = false;
+
+/* ---- DOM refs ---- */
+const html = document.documentElement;
+const navbar = document.getElementById('navbar');
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+const langToggle = document.getElementById('langToggle');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+/* ---- Navbar scroll effect ---- */
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 20) {
+    navbar.classList.add('scrolled');
+  } else {
+    navbar.classList.remove('scrolled');
+  }
+}, { passive: true });
+
+/* ---- Language toggle ---- */
+langToggle.addEventListener('click', () => {
+  lang = lang === 'en' ? 'ar' : 'en';
+  html.setAttribute('data-lang', lang);
+  html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  html.setAttribute('lang', lang);
+});
+
+/* ---- Theme toggle ---- */
+themeToggle.addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', theme);
+  themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+});
+
+/* ---- Hamburger ---- */
+hamburger.addEventListener('click', () => {
+  mobileOpen = !mobileOpen;
+  mobileNav.classList.toggle('open', mobileOpen);
+
+  // Animate hamburger to X
+  const spans = hamburger.querySelectorAll('span');
+  if (mobileOpen) {
+    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+  } else {
+    spans[0].style.transform = '';
+    spans[1].style.opacity = '';
+    spans[2].style.transform = '';
+  }
+});
+
+function closeMobile() {
+  mobileOpen = false;
+  mobileNav.classList.remove('open');
+  const spans = hamburger.querySelectorAll('span');
+  spans[0].style.transform = '';
+  spans[1].style.opacity = '';
+  spans[2].style.transform = '';
+}
+
+/* ---- Intersection Observer for animations ---- */
+const observeEls = document.querySelectorAll('.observe, .problem-card, .step-card, .device-full-card, .feature-card, .usecase-card, .milestone');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      // Stagger siblings
+      const siblings = [...entry.target.parentElement.children].filter(c => c.classList.contains(entry.target.className.split(' ')[0]));
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, idx * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.15,
+  rootMargin: '0px 0px -50px 0px'
+});
+
+observeEls.forEach(el => observer.observe(el));
+
+/* ---- Also observe solution-visual ---- */
+const solVisual = document.querySelector('.solution-visual');
+if (solVisual) {
+  const solObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        solObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  solVisual.style.opacity = '0';
+  solVisual.style.transform = 'translateY(40px)';
+  solVisual.style.transition = 'all 0.8s cubic-bezier(0.4,0,0.2,1)';
+  solObs.observe(solVisual);
+}
+
+/* ---- Smooth active nav highlighting ---- */
+const sections = document.querySelectorAll('section[id]');
+const navAs = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) {
+      current = sec.id;
+    }
+  });
+  navAs.forEach(a => {
+    a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--accent-cyan)' : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
